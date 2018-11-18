@@ -36,13 +36,23 @@ class Weather(object):
     # --> Sub callback function, one per intent
     def weather_callback(self, hermes, intent_message):
         # terminate the session first if not continue
-        hermes.publish_end_session(intent_message.session_id, "Hallo Markus")
+        hermes.publish_end_session(intent_message.session_id, "")
+
+        current_weather = ""
+        if intent_message.slots.days:
+            day = intent_message.slots.days.first().value
+            if day.encode("utf-8") == "heute":
+                current_weather = str(requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de_de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json().get("weather")[0].get("description"))
+
+        current_weather = str(requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de_de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json().get("weather")[0].get("description")) 
+                
+
         
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         # if need to speak the execution result by tts
-        hermes.publish_start_session_notification(intent_message.site_id, "Action1 has been done", "")
+        hermes.publish_start_session_notification(intent_message.site_id, current_weather, "snips-skill-weather")
 
 
     # More callback function goes here...
