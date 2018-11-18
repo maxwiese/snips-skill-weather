@@ -17,9 +17,10 @@ MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
 MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 
+
 class Weather(object):
     """Class used to wrap action code with mqtt connection
-        
+
         Please change the name refering to your application
     """
 
@@ -27,33 +28,30 @@ class Weather(object):
         # get the configuration if needed
         try:
             self.config = SnipsConfigParser.read_configuration_file(CONFIG_INI)
-        except :
+        except:
             self.config = None
 
         # start listening to MQTT
         self.start_blocking()
-        
+
     # --> Sub callback function, one per intent
     def weather_callback(self, hermes, intent_message):
         # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "")
 
-        current_weather = ""
-        if intent_message.slots.days:
-            day = intent_message.slots.days.first().value
-            if day.encode("utf-8") == "heute":
-                current_weather = str(requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de_de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json().get("weather")[0].get("description"))
+        raw_json = requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json()
+        weather = raw_json.get("weather")
+        first_weather = weather[0]
+        description = first_weather.get("description")
 
-        current_weather = str(requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de_de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json().get("weather")[0].get("description")) 
-                
+        print(str(description))
 
-        
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         # if need to speak the execution result by tts
-        hermes.publish_start_session_notification(intent_message.site_id, current_weather, "snips-skill-weather")
-
+        hermes.publish_start_session_notification(
+            intent_message.site_id, description, "snips-skill-weather")
 
     # More callback function goes here...
 
