@@ -17,7 +17,7 @@ MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
 MQTT_ADDR = "{}:{}".format(MQTT_IP_ADDR, str(MQTT_PORT))
 
-class Wether(object):
+class Weather(object):
     """Class used to wrap action code with mqtt connection
         
         Please change the name refering to your application
@@ -34,9 +34,9 @@ class Wether(object):
         self.start_blocking()
         
     # --> Sub callback function, one per intent
-    def wether_callback(self, hermes, intent_message):
+    def weather_callback(self, hermes, intent_message):
         # terminate the session first if not continue
-        hermes.publish_end_session(intent_message.session_id, "")
+        hermes.publish_end_session(intent_message.session_id, "Hallo Markus")
         
         # action code goes here...
         print '[Received] intent: {}'.format(intent_message.intent.intent_name)
@@ -50,7 +50,7 @@ class Wether(object):
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
-        if coming_intent == 'maxwiese:wether':
+        if coming_intent == 'maxwiese:weather':
             self.wether_callback(hermes, intent_message)
         # more callback and if condition goes here...
 
@@ -60,4 +60,4 @@ class Wether(object):
             h.subscribe_intents(self.master_intent_callback).start()
 
 if __name__ == "__main__":
-    Wether()
+    Weather()
