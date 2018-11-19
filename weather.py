@@ -39,6 +39,12 @@ class Weather(object):
         # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "")
 
+        if intent_message.slots.days:
+            day = intent_message.slots.days.first().value
+            print(day)
+            
+
+            
         raw_json = requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json()
         weather = raw_json.get("weather")
         first_weather = weather[0]
@@ -47,18 +53,18 @@ class Weather(object):
         print(str(description))
 
         # action code goes here...
-        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+       print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         # if need to speak the execution result by tts
         hermes.publish_start_session_notification(
-            intent_message.site_id, description, "snips-skill-weather")
+            intent_message.site_id, str(description), "snips-skill-weather")
 
     # More callback function goes here...
 
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
-        if coming_intent == 'maxwiese:weather':
+        if coming_intent == 'maxwiese:weatherforecast':
             self.wether_callback(hermes, intent_message)
         # more callback and if condition goes here...
 
