@@ -7,6 +7,7 @@ from hermes_python.ontology import *
 import io
 
 import requests
+import datetime
 
 CONFIG_INI = "config.ini"
 
@@ -42,15 +43,10 @@ class Weather(object):
         if intent_message.slots.days:
             day = intent_message.slots.days.first().value
             print(day)
+            pass
             
-
-            
-        raw_json = requests.get("http://api.openweathermap.org/data/2.5/weather?id=2878270&lang=de&appid=acfdf5a3bb856dd2096e0ab80e8cc442").json()
-        weather = raw_json.get("weather")
-        first_weather = weather[0]
-        description = first_weather.get("description")
-
-        print(str(description))
+        _weather = GetWeather()
+        _weather.getTodaysWeather()
 
         # action code goes here...
        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
@@ -72,6 +68,91 @@ class Weather(object):
     def start_blocking(self):
         with Hermes(MQTT_ADDR) as h:
             h.subscribe_intents(self.master_intent_callback).start()
+
+class GetWeather(object):
+
+    today =  datetime.datetime.now()
+
+    def __init__(self):
+        self.weather_forecast = requests.get("http://api.openweathermap.org/data/2.5/forecast?id=2878270&lang=de&APPID=25fdaf98e2bfd3173a4d7048b59b1aae").json()
+        self.weather_forecast_list = self.weather_forecast.get("list")
+         
+    def getTodaysWeather(self):
+        return_data = ""
+
+        for main_weather in self.weather_forecast_list:
+            date = self.parse_date(str(main_weather.get("dt_txt")))
+            
+            if self.today.strftime("%d%m%y") == date.strftime("%d%m%y"):                
+
+                #get the Weather
+                weather = main_weather.get("weather")[0]
+                first_weather = weather
+                weather_description = first_weather.get("description")
+
+                #get the Temperatur 
+                temp_kelsius = float(str(main_weather.get("main").get("temp")))
+                temp = temp_kelsius - 273.15
+
+                if date.strftime("%H") == "09":
+                    return_data += "Heute Morgen {} bei einer Temperatur von {:.2f} °C\n".format(weather_description, temp)
+                
+                if date.strftime("%H") == "12":
+                    pass
+                
+                if date.strftime("%H") == "15":
+                    return_data += "Am Nachmittag {} bei einer Temperatur von {:.2f} °C\n".format(weather_description, temp)
+                
+                if date.strftime("%H") == "21":
+                    return_data += "In der Nacht {} bei einer Temperatur von {:.2f} °C\n".format(weather_description, temp)
+
+        return return_data
+
+    def getTomorrowsWeather(self):
+        return_data = ""
+        tomorrow = datetime.datetime(int(self.today.strftime("%Y")), int(self.today.strftime("%m")), int(self.today.strftime("%d"))+1)
+
+        for main_weather in self.weather_forecast_list:
+            date = self.parse_date(str(main_weather.get("dt_txt")))
+
+            if tomorrow.strftime("%d%m%y") == date.strftime("%d%m%y"):
+                #get the Weather
+                weather = main_weather.get("weather")[0]
+                first_weather = weather
+                weather_description = first_weather.get("description")
+
+                #get the Temperatur 
+                temp_kelsius = float(str(main_weather.get("main").get("temp")))
+                temp = temp_kelsius - 273.15
+
+                if date.strftime("%H") == "09":
+                    return_data += "Morgen in der Früh {} bei einer Temperatur von {:.2f} °C\n".format(weather_description, temp)
+                
+                if date.strftime("%H") == "12":
+                    pass
+                
+                if date.strftime("%H") == "15":
+                    return_data += "Morgen Nachmittag {} bei einer Temperatur von {:.2f} °C\n".format(weather_description, temp)
+                
+                if date.strftime("%H") == "21":
+                    return_data += "Morgen Nacht {} bei einer Temperatur von {:.2f} °C\n".format(weather_description, temp)
+
+        return return_data
+                
+
+    def parse_date(self, raw_date):
+        year = raw_date[0:4]
+        month = raw_date[5:7]
+        day = raw_date[8:10]
+        hour = raw_date[11:13]
+        minute = raw_date[14:16]
+
+        date = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute))
+
+        return date
+
+    def parse_weekday(self, date):
+        return ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag")[date.weekday()]
 
 if __name__ == "__main__":
     Weather()
