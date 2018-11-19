@@ -48,12 +48,12 @@ class Weather(object):
         #    day = intent_message.slots.days.first().value
         #    print(day)
             
-        #_weather = GetWeather()
-        #description = _weather.getTodaysWeather()
+        _weather = GetWeather()
+        description = _weather.getTodaysWeather()
 
         # if need to speak the execution result by tts
         print("debugg3")
-        hermes.publish_start_session_notification(intent_message.site_id, "Wetter")
+        hermes.publish_start_session_notification(intent_message.site_id, description, "Wetter App")
 
     # More callback function goes here...
     # --> Master callback function, triggered everytime an intent is recognized
@@ -154,6 +154,3 @@ class GetWeather(object):
 
     def parse_weekday(self, date):
         return ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag")[date.weekday()]
-
-if __name__ == "__main__":
-    Weather()
