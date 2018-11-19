@@ -48,7 +48,7 @@ class Weather(object):
         description = _weather.getTodaysWeather()
 
         # action code goes here...
-        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+        print("[Received] intent: {}".format(intent_message.intent.intent_name))
 
         # if need to speak the execution result by tts
         hermes.publish_start_session_notification(
@@ -59,7 +59,7 @@ class Weather(object):
     def master_intent_callback(self,hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
         if coming_intent == 'maxwiese:weatherforecast':
-            self.wether_callback(hermes, intent_message)
+            self.weather_callback(hermes, intent_message)
         # more callback and if condition goes here...
 
     # --> Register callback function and start MQTT
