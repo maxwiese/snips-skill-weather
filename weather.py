@@ -40,6 +40,9 @@ class Weather(object):
         # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "")
 
+         # action code goes here...
+        print("[Received] intent: {}".format(intent_message.intent.intent_name))
+
         if intent_message.slots.days:
             day = intent_message.slots.days.first().value
             print(day)
@@ -47,12 +50,8 @@ class Weather(object):
         _weather = GetWeather()
         description = _weather.getTodaysWeather()
 
-        # action code goes here...
-        print("[Received] intent: {}".format(intent_message.intent.intent_name))
-
         # if need to speak the execution result by tts
-        hermes.publish_start_session_notification(
-            intent_message.site_id, description, "snips-skill-weather")
+        hermes.publish_start_session_notification(intent_message.site_id, description)
 
     # More callback function goes here...
     # --> Master callback function, triggered everytime an intent is recognized
