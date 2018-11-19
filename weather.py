@@ -43,20 +43,18 @@ class Weather(object):
         if intent_message.slots.days:
             day = intent_message.slots.days.first().value
             print(day)
-            pass
             
         _weather = GetWeather()
-        _weather.getTodaysWeather()
+        description = _weather.getTodaysWeather()
 
         # action code goes here...
-       print '[Received] intent: {}'.format(intent_message.intent.intent_name)
+        print '[Received] intent: {}'.format(intent_message.intent.intent_name)
 
         # if need to speak the execution result by tts
         hermes.publish_start_session_notification(
-            intent_message.site_id, str(description), "snips-skill-weather")
+            intent_message.site_id, description, "snips-skill-weather")
 
     # More callback function goes here...
-
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
