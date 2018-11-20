@@ -37,11 +37,10 @@ class Weather(object):
 
     # --> Sub callback function, one per intent
     def weather_callback(self, hermes, intent_message):
-        print("debug2")
         # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "")
 
-         # action code goes here...
+        # action code goes here...
         print("[Received] intent: {}".format(intent_message.intent.intent_name))
 
         #if intent_message.slots.days:
@@ -52,16 +51,13 @@ class Weather(object):
         description = _weather.getTodaysWeather()
 
         # if need to speak the execution result by tts
-        print("debugg3")
         hermes.publish_start_session_notification(intent_message.site_id, description, "Wetter App")
 
     # More callback function goes here...
     # --> Master callback function, triggered everytime an intent is recognized
     def master_intent_callback(self,hermes, intent_message):
         coming_intent = intent_message.intent.intent_name
-        print("debug")
         if coming_intent == 'maxwiese:weatherforecast':
-            print("debug1")
             self.weather_callback(hermes, intent_message)
         # more callback and if condition goes here...
 
