@@ -124,9 +124,9 @@ class Weather(object):
         # terminate the session first if not continue
         hermes.publish_end_session(intent_message.session_id, "")
         # action code goes here...
-        print(intent_message.slots)
-	if intent_message.slots.days:
-            day = intent_message.slots.days.first().value
+        
+	if intent_message.slots.WeekIntetn:
+            day = intent_message.slots.WeekIntetn.first().value
             print(day)
 
 
