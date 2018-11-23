@@ -125,19 +125,27 @@ class Weather(object):
         hermes.publish_end_session(intent_message.session_id, "")
         # action code goes here...
         
-	if intent_message.slots.WeekIntetn:
-            day = intent_message.slots.WeekIntetn.first().value
-            print(day)
+        _weather = GetWeather()
 
+        if intent_message.slots.WeekIntetn:
+            raw_day = intent_message.slots.WeekIntetn.first().value
+            day = raw_day.encode('utf-8')
+
+            if day == "heute":
+                description = _weather.getTodaysWeather()
+            elif day == "morgen":
+                description = _weather.getTomorrowsWeather()
+            elif raw_day == "heute":
+                description = _weather.getTodaysWeather()
+            elif raw_day == "morgen":
+                description = _weather.getTomorrowsWeather()
+            else:
+                description = _weather.getTodaysWeather()
 
         print("[Received] intent: {}".format(intent_message.intent.intent_name))
 
-        _weather = GetWeather()
-        description = _weather.getTodaysWeather()
-	print(description)
-
         # if need to speak the execution result by tts
-        hermes.publish_start_session_notification(intent_message.site_id, description, "Wetter App")
+        hermes.publish_start_session_notification(intent_message.site_id, description)
 
     # More callback function goes here...
     # --> Master callback function, triggered everytime an intent is recognized
